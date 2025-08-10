@@ -11,24 +11,22 @@
 - ✅ セキュアな設定とログ管理
 - ✅ SQLiteデータベースによる永続化
 
-## セットアップ
+## セットアップ/デプロイメント
 
-### 1. 環境準備
+1) リポジトリ取得と環境準備（Debian/Ubuntu 例）
 
 ```bash
-# 仮想環境作成
-python -m venv botenv
+sudo apt update && sudo apt -y install git python3 python3-venv python3-pip
+git clone https://github.com/technical-art-server/vc-delay-notifier.git
+cd vc-delay-notifier
 
-# 仮想環境アクティベート（Windows）
-botenv\Scripts\activate
-
-# 依存関係インストール
+python3 -m venv ~/discord_bot_env
+source ~/discord_bot_env/bin/activate
+python -m pip install -U pip
 pip install -r requirements.txt
 ```
 
-### 2. 設定ファイル
-
-`.env`ファイルを作成してDiscord Bot Tokenを設定：
+2) 設定（.env または環境変数）
 
 ```env
 DISCORD_BOT_TOKEN=your_discord_bot_token_here
@@ -40,10 +38,37 @@ MAX_DELAY_SECONDS=600
 MIN_DELAY_SECONDS=5
 ```
 
-### 3. Bot実行
+3) 起動確認（前景実行）
 
 ```bash
 python -m vc_delay_notifier
+```
+
+4) 常駐化（systemd）
+
+```bash
+sudo tee /etc/systemd/system/vcdelay.service >/dev/null <<'UNIT'
+[Unit]
+Description=VC Delay Notifier Bot
+After=network.target
+
+[Service]
+User=YOUR_USER
+WorkingDirectory=/home/YOUR_USER/vc-delay-notifier
+Environment="DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}"
+Environment="LOG_LEVEL=INFO"
+Environment="DATABASE_PATH=/home/YOUR_USER/vc-delay-notifier/data/bot.db"
+ExecStart=/home/YOUR_USER/discord_bot_env/bin/python -m vc_delay_notifier
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+
+sudo systemctl daemon-reload
+sudo systemctl enable vcdelay
+sudo systemctl start vcdelay
 ```
 
 ## コマンド一覧
@@ -121,44 +146,6 @@ vc-delay-notifier/
 - 🔒 エラー情報の適切な隠蔽
 
 ## デプロイメント
-
-### VMセットアップ（Clone方式・手動）
-
-```bash
-# 必要パッケージ
-sudo apt update && sudo apt -y install git python3 python3-venv python3-pip
-
-# コード取得
-git clone https://github.com/technical-art-server/vc-delay-notifier.git
-cd vc-delay-notifier
-
-# 仮想環境
-python3 -m venv ~/discord_bot_env
-source ~/discord_bot_env/bin/activate
-python -m pip install -U pip
-pip install -r requirements.txt
-
-# 環境変数（いずれかの方法で設定）
-# 1) .env を作成
-cp .env.example .env && nano .env   # DISCORD_BOT_TOKEN 等を設定
-# 2) もしくはシェルで一時的に
-# export DISCORD_BOT_TOKEN=YOUR_TOKEN
-
-# 起動確認
-python -m vc_delay_notifier
-```
-
-### Google Compute Engine（無料枠）
-
-```bash
-# systemdサービス設定
-sudo nano /etc/systemd/system/vcdelay.service
-
-# サービス開始
-sudo systemctl daemon-reload
-sudo systemctl enable vcdelay
-sudo systemctl start vcdelay
-```
 
 ## 開発者向け
 
