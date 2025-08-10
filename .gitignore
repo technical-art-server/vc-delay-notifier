@@ -1,0 +1,28 @@
+# Environment files
+.env
+*.env
+
+# Virtual Environment
+botenv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Database (any level under VCDelayNotifier)
+**/data/*.db
+**/data/*.db-journal
+
+# Logs (any level under VCDelayNotifier)
+**/logs/
+**/*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
