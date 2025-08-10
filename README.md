@@ -8,15 +8,13 @@
 - ✅ 参加後すぐ退出した場合の通知キャンセル
 - ✅ チャンネル移動時の適切な処理
 - ✅ スラッシュコマンドによる設定管理
-- ✅ セキュアな設定とログ管理
-- ✅ SQLiteデータベースによる永続化
 
 ## セットアップ/デプロイメント
 
 1) リポジトリ取得と環境準備（Debian/Ubuntu 例）
 
 ```bash
-sudo apt update && sudo apt -y install git python3 python3-venv python3-pip
+sudo apt -y install git python3 python3-venv python3-pip
 git clone https://github.com/technical-art-server/vc-delay-notifier.git
 cd vc-delay-notifier
 
@@ -129,21 +127,13 @@ vc-delay-notifier/
     └── notification_manager.py# 通知管理
 ```
 
-## 必要なDiscord権限
+## 必要なDiscordBot権限
 
 - `Send Messages` - メッセージ送信
 - `Embed Links` - Embed投稿
 - `Use Slash Commands` - スラッシュコマンド使用
 - `Connect` - ボイスチャンネル状態監視
 - `View Channel` - チャンネル情報取得
-
-## セキュリティ
-
-- 🔒 環境変数による機密情報管理
-- 🔒 最小権限Intents設定
-- 🔒 入力値検証とサニタイゼーション
-- 🔒 ログローテーション
-- 🔒 エラー情報の適切な隠蔽
 
 ## デプロイメント
 
@@ -159,15 +149,6 @@ tail -f logs/bot.log
 systemctl status vcdelay
 ```
 
-### データベース確認
-
-```sql
--- 設定確認
-SELECT * FROM guild_settings;
-
--- 通知ログ確認
-SELECT * FROM notification_logs ORDER BY created_at DESC LIMIT 10;
-```
 
 ## トラブルシューティング
 
